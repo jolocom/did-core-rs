@@ -1,5 +1,12 @@
+//! # DID-Core
+//!
+//! A Library for the core data model of the W3C Decentralized Identifier Specification
+
 use serde::{Deserialize, Serialize};
 
+/// DID Document
+///
+/// A set of data describing the DID Subject, as defined by the [DID-Core Spec](https://www.w3.org/TR/did-core/#dfn-did-documents).
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DIDDocument {
@@ -10,20 +17,27 @@ pub struct DIDDocument {
     authentication: Option<Vec<String>>,
 }
 
+/// Verification Method Section
+///
+/// Set of parameters that can be used together with a process or protocol to independantly verify a proof, as defined by the [DID-Core Spec](https://www.w3.org/TR/did-core/#dfn-verification-method)
 #[derive(Serialize, Deserialize)]
 pub struct VerificationMethod {
     id: String,
 
-    #[serde(rename = "type")]
-    key_type: KeyTypes,
+    #[serde(flatten)]
+    key_type: VerificationMethodType,
     controller: String,
 
     #[serde(flatten)]
     key: VerificationMethodProperties,
 }
 
+/// Verification Method Types
+///
+/// As defined by the [DID-Core Registries §4.5](https://w3c.github.io/did-spec-registries/#verification-method-types)
 #[derive(Serialize, Deserialize)]
-pub enum KeyTypes {
+#[serde(tag = "type")]
+pub enum VerificationMethodType {
     JwsVerificationKey2020,
     EcdsaSecp256k1VerificationKey2019,
     Ed25519VerificationKey2018,
@@ -34,6 +48,9 @@ pub enum KeyTypes {
     EcdsaSecp256k1RecoveryMethod2020,
 }
 
+/// Verification Method Properties
+///
+/// As defined by the [DID-Core Registries §4.4](https://w3c.github.io/did-spec-registries/#verification-method-properties)
 #[derive(Serialize, Deserialize)]
 pub enum VerificationMethodProperties {
     #[serde(rename = "ethereumAddress")]
